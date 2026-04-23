@@ -1,0 +1,26 @@
+{
+  "name": "footballer-hub",
+  "version": "1.0.0",
+  "description": "Football Connect - Player Networking Platform",
+  "main": "index.html",
+  "files": [
+    "index.html",
+    "speed-insights.js"
+  ],
+  "scripts": {
+    "build": "echo 'Build completed'",
+    "dev": "echo 'Development server'",
+    "lint": "echo 'No linter configured'",
+    "test": "echo 'No tests configured'"
+  },
+  "keywords": [
+    "football",
+    "networking",
+    "sports"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@vercel/speed-insights": "^1.0.12"
+  }
+}
