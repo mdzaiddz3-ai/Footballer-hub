@@ -1,0 +1,17 @@
+{
+  "name": "footballer-hub",
+  "version": "1.0.0",
+  "description": "Football Connect - Player Networking Platform",
+  "main": "index.html",
+  "scripts": {
+    "build": "echo 'No build needed for static site'",
+    "dev": "npx http-server .",
+    "lint": "echo 'No linter configured'"
+  },
+  "keywords": ["football", "networking", "sports"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@vercel/speed-insights": "^1.0.12"
+  }
+}
