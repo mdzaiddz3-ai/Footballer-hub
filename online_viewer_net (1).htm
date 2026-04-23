@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Football Connect - Player Networking Platform</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #3a5ee5;
+            --secondary: #34c759;
+            --accent: #ff9500;
+            --dark-bg: #121212;
+            --dark-card: #1e1e1e;
+            --dark-text: #f5f5f5;
+            --light-bg: #f8f9fa;
+            --light-card: #ffffff;
+            --light-text: #333333;
+            --border-radius: 12px;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .dark-mode {
+            --bg-color: var(--dark-bg);
+            --card-bg: var(--dark-card);
+            --text-color: var(--dark-text);
+            --input-bg: #2a2a2a;
+        }
+
+        .light-mode {
+            --bg-color: var(--light-bg);
+            --card-bg: var(--light-card);
+            --text-color: var(--light-text);
+            --input-bg: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Auth Pages */
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
+                        url('https://images.unsplash.com/photo-1575361204480-aadea25e6e68?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
+            background-size: cover;
+            background-position: center;
+        }
+
+        .auth-card {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 450px;
+            padding: 30px;
+            position: relative;
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .auth-header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+
+        .auth-logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 15px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 32px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            font-size: 16px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 20px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+
+        .btn-google {
+            background-color: #db4437;
+        }
+
+        .social-login {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+        }
+
+        .divider::before, .divider::after {
+            content: "";
+            flex: 1;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .divider span {
+            padding: 0 10px;
+            color: #777;
+        }
+
+        .auth-footer {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .auth-footer a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        /* Main App Layout */
+        .app-header {
+            background-color: var(--card-bg);
+            box-shadow: var(--shadow);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            font-size: 22px;
+            color: var(--primary);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-links a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 3fr 1.2fr;
+            gap: 20px;
+            padding: 30px 0;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .profile-card {
+            text-align: center;
+        }
+
+        .profile-img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 15px;
+            border: 3px solid var(--primary);
+        }
+
+        .profile-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #777;
+        }
+
+        .feed-item {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .feed-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .feed-content {
+            margin: 10px 0;
+        }
+
+        .feed-img {
+            width: 100%;
+            border-radius: var(--border-radius);
+            margin: 10px 0;
+        }
+
+        .feed-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .feed-action {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #777;
+            cursor: pointer;
+        }
+
+        .notification-item, .message-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            border-radius: var(--border-radius);
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        .notification-item:hover, .message-item:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .search-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .search-bar input {
+            flex: 1;
+        }
+
+        .trial-item {
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            background-color: rgba(58, 94, 229, 0.1);
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .main-content {
+                grid-template-columns: 1fr 2fr;
+            }
+            
+            .right-sidebar {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .left-sidebar {
+                display: none;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body class="light-mode">
+    <!-- Authentication Page -->
+    <div id="auth-page" class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="auth-logo">
+                    <i class="fa-solid fa-futbol"></i>
+                </div>
+                <h1>Football Connect</h1>
+                <p>Connect with players and teams worldwide</p>
+            </div>
+            
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" class="form-control" placeholder="Enter your email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" class="form-control" placeholder="Enter your password" required>
+                </div>
+                
+                <div class="form-group">
+                    <button type="submit" class="btn btn-block">Login</button>
+                </div>
+                
+                <div class="divider">
+                    <span>Or continue with</span>
+                </div>
+                
+                <div class="social-login">
+                    <button type="button" class="btn btn-google btn-block">
+                        <i class="fab fa-google"></i> Google
+                    </button>
+                </div>
+                
+                <div class="auth-footer">
+                    <p>Don't have an account? <a href="#" id="switch-to-signup">Sign Up</a></p>
+                    <p><a href="#">Forgot Password?</a></p>
+                </div>
+            </form>
+            
+            <form id="signup-form" style="display: none;">
+                <div class="form-group">
+                    <label for="signup-name">Full Name</label>
+                    <input type="text" id="signup-name" class="form-control" placeholder="Enter your full name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="signup-email">Email</label>
+                    <input type="email" id="signup-email" class="form-control" placeholder="Enter your email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="signup-password">Password</label>
+                    <input type="password" id="signup-password" class="form-control" placeholder="Create a strong password" required>
+                    <small>Must be at least 8 characters with uppercase, lowercase, and numbers</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="signup-position">Position</label>
+                    <select id="signup-position" class="form-control" required>
+                        <option value="">Select your position</option>
+                        <option value="goalkeeper">Goalkeeper</option>
+                        <option value="defender">Defender</option>
+                        <option value="midfielder">Midfielder</option>
+                        <option value="forward">Forward</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <button type="submit" class="btn btn-block">Create Account</button>
+                </div>
+                
+                <div class="auth-footer">
+                    <p>Already have an account? <a href="#" id="switch-to-login">Login</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Main Application -->
+    <div id="app-page" style="display: none;">
+        <header class="app-header">
+            <div class="container header-content">
+                <div class="logo">
+                    <i class="fa-solid fa-futbol"></i>
+                    <span>Football Connect</span>
+                </div>
+                
+                <nav class="nav-links">
+                    <a href="#"><i class="fa-solid fa-house"></i> Home</a>
+                    <a href="#"><i class="fa-solid fa-search"></i> Explore</a>
+                    <a href="#"><i class="fa-solid fa-users"></i> Teams</a>
+                    <a href="#"><i class="fa-solid fa-message"></i> Messages</a>
+                    <a href="#"><i class="fa-solid fa-bell"></i> Notifications</a>
+                </nav>
+                
+                <div class="user-menu">
+                    <button class="theme-toggle" id="theme-toggle">
+                        <i class="fa-solid fa-moon"></i>
+                    </button>
+                    <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=256&q=80" alt="User" class="avatar">
+                    <span>John Doe</span>
+                </div>
+            </div>
+        </header>
+        
+        <main class="container main-content">
+            <!-- Left Sidebar -->
+            <aside class="left-sidebar">
+                <div class="card profile-card">
+                    <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=256&q=80" alt="Profile" class="profile-img">
+                    <h2>John Doe</h2>
+                    <p><i class="fa-solid fa-location-dot"></i> London, UK</p>
+                    <p><i class="fa-solid fa-futbol"></i> Forward</p>
+                    
+                    <div class="profile-stats">
+                        <div class="stat">
+                            <div class="stat-value">24</div>
+                            <div class="stat-label">Age</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">182</div>
+                            <div class="stat-label">Height</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">75</div>
+                            <div class="stat-label">Weight</div>
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-block">Edit Profile</button>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3>My Stats</h3>
+                    </div>
+                    <canvas id="statsChart" width="100%" height="200"></canvas>
+                </div>
+            </aside>
+            
+            <!-- Main Feed -->
+            <div class="main-feed">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Create Post</h3>
+                    </div>
+                    <div class="feed-user">
+                        <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=256&q=80" alt="User" class="avatar" style="width: 40px; height: 40px;">
+                        <div>
+                            <strong>John Doe</strong>
+                            <p>What's on your mind?</p>
+                        </div>
+                    </div>
+                    <div class="feed-actions">
+                        <button class="btn" style="flex: 1;"><i class="fa-solid fa-video"></i> Video</button>
+                        <button class="btn" style="flex: 1;"><i class="fa-solid fa-image"></i> Photo</button>
+                        <button class="btn" style="flex: 1;"><i class="fa-solid fa-trophy"></i> Achievement</button>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="feed-item">
+                        <div class="feed-user">
+                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=256&q=80" alt="User" class="avatar">
+                            <div>
+                                <strong>Mike Johnson</strong>
+                                <p>Posted 2 hours ago</p>
+                            </div>
+                        </div>
+                        <div class="feed-content">
+                            <p>Just finished an amazing training session! Working on my finishing skills ahead of the big match this weekend. ⚽️</p>
+                        </div>
+                        <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Training" class="feed-img">
+                        <div class="feed-actions">
+                            <div class="feed-action"><i class="fa-solid fa-heart"></i> 42</div>
+                            <div class="feed-action"><i class="fa-solid fa-comment"></i> 7</div>
+                            <div class="feed-action"><i class="fa-solid fa-share"></i> Share</div>
+                        </div>
+                    </div>
+                    
+                    <div class="feed-item">
+                        <div class="feed-user">
+                            <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&alt=User" class="avatar">
+                            <div>
+                                <strong>Sarah Williams</strong>
+                                <p>Posted 5 hours ago</p>
+                            </div>
+                        </div>
+                        <div class="feed-content">
+                            <p>Our team is looking for a midfielder for the upcoming season! If you're interested in trying out, please message me directly. 🏆</p>
+                        </div>
+                        <div class="feed-actions">
+                            <div class="feed-action"><i class="fa-solid fa-heart"></i> 28</div>
+                            <div class="feed-action"><i class="fa-solid fa-comment"></i> 15</div>
+                            <div class="feed-action"><i class="fa-solid fa-share"></i> Share</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Sidebar -->
+            <aside class="right-sidebar">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Upcoming Trials</h3>
+                    </div>
+                    
+                    <div class="trial-item">
+                        <h4>London FC Tryouts</h4>
+                        <p><i class="fa-solid fa-location-dot"></i> London, UK</p>
+                        <p><i class="fa-solid fa-calendar"></i> June 15, 2023</p>
+                        <button class="btn btn-block" style="margin-top: 10px;">Apply Now</button>
+                    </div>
+                    
+                    <div class="trial-item">
+                        <h4>United Warriors Trials</h4>
+                        <p><i class="fa-solid fa-location-dot"></i> Manchester, UK</p>
+                        <p><i class="fa-solid fa-calendar"></i> June 22, 2023</p>
+                        <button class="btn btn-block" style="margin-top: 10px;">Apply Now</button>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Suggested Players</h3>
+                    </div>
+                    
+                    <div class="message-item">
+                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=256&q=80" alt="User" class="avatar">
+                        <div>
+                            <strong>David Wilson</strong>
+                            <p>Midfielder • London</p>
+                        </div>
+                    </div>
+                    
+                    <div class="message-item">
+                        <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=256&q=80" alt="User" class="avatar">
+                        <div>
+                            <strong>Emma Thompson</strong>
+                            <p>Defender • Manchester</p>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </main>
+    </div>
+
+    <script>
+        // DOM Elements
+        const authPage = document.getElementById('auth-page');
+        const appPage = document.getElementById('app-page');
+        const loginForm = document.getElementById('login-form');
+        const signupForm = document.getElementById('signup-form');
+        const switchToSignup = document.getElementById('switch-to-signup');
+        const switchToLogin = document.getElementById('switch-to-login');
+        const themeToggle = document.getElementById('theme-toggle');
+        
+        // Theme Toggle
+        themeToggle.addEventListener('click', () => {
+            if (document.body.classList.contains('light-mode')) {
+                document.body.classList.remove('light-mode');
+                document.body.classList.add('dark-mode');
+                themeToggle.innerHTML = '<i class="fa-solid fa-sun"></i>';
+            } else {
+                document.body.classList.remove('dark-mode');
+                document.body.classList.add('light-mode');
+                themeToggle.innerHTML = '<i class="fa-solid fa-moon"></i>';
+            }
+        });
+        
+        // Form Switching
+        switchToSignup.addEventListener('click', (e) => {
+            e.preventDefault();
+            loginForm.style.display = 'none';
+            signupForm.style.display = 'block';
+        });
+        
+        switchToLogin.addEventListener('click', (e) => {
+            e.preventDefault();
+            signupForm.style.display = 'none';
+            loginForm.style.display = 'block';
+        });
+        
+        // Login Form Submission
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            // Simulate authentication
+            if (email && password) {
+                authPage.style.display = 'none';
+                appPage.style.display = 'block';
+                
+                // Initialize chart
+                initStatsChart();
+            }
+        });
+        
+        // Signup Form Submission
+        signupForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('signup-name').value;
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+            const position = document.getElementById('signup-position').value;
+            
+            // Simulate registration
+            if (name && email && password && position) {
+                authPage.style.display = 'none';
+                appPage.style.display = 'block';
+                
+                // Initialize chart
+                initStatsChart();
+            }
+        });
+        
+        // Initialize Stats Chart
+        function initStatsChart() {
+            const ctx = document.getElementById('statsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Pace', 'Shooting', 'Passing', 'Dribbling', 'Defending', 'Physical'],
+                    datasets: [{
+                        label: 'Current Stats',
+                        data: [85, 92, 78, 90, 65, 80],
+                        backgroundColor: 'rgba(58, 94, 229, 0.2)',
+                        borderColor: 'rgba(58, 94, 229, 1)',
+                        pointBackgroundColor: 'rgba(58, 94, 229, 1)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgba(58, 94, 229, 1)'
+                    }]
+                },
+                options: {
+                    scales: {
+                        r: {
+                            angleLines: {
+                                display: true
+                            },
+                            suggestedMin: 0,
+                            suggestedMax: 100
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Simulate session timeout (for demonstration)
+        setTimeout(() => {
+            // This would typically check for inactivity
+            console.log("Checking session...");
+        }, 60000);
+    </script>
+</body>
+</html>
